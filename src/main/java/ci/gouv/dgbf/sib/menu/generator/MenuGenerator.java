@@ -69,17 +69,15 @@ public class MenuGenerator {
 
     public List<MenuTab> generateAccountMenu() {
 
-        List<MenuTab> tabMenus = new ArrayList<>();
+        MenuTab menuTab = new MenuTab();
         List<MenuDTO> menus = portailApiService.findMenusByServiceCode(ACCOUNT_SERVICE_CODE);
-
         menus.sort((MenuDTO m1, MenuDTO m2) -> m1.getPosition() - m2.getPosition());
-        
-        if (!menus.isEmpty()) {
-            List<MenuDTO> firstLevelMenus = menus.stream().filter(m -> null == m.getMenuParentUuid() && m.isAbstrait()).collect(Collectors.toList());
-            tabMenus.addAll(buildMenu(firstLevelMenus, menus));
-        }
 
-        return tabMenus;
+        MenuModel model = new DefaultMenuModel();
+        menus.forEach(m -> { model.addElement(buildMenuItemFromMenu(m)); });
+
+        menuTab.setMenuModel(model);
+        return List.of(menuTab);
 
     }
 
