@@ -26,5 +26,16 @@ public class MenuDTO extends BaseDTO implements Serializable {
     private int position;
     private String menuParentUuid;
     private String icon;
+
+    public MenuDTO(String uuid,String name, String url, String serviceUUID, String icon, boolean abstrait, int position, String menuParentUuid) {
+        this.uuid = uuid;
+        this.name = name;
+        this.url = url;
+        this.serviceUuid = serviceUUID;
+        this.icon = icon;
+        this.abstrait = abstrait;
+        this.position = position;
+        this.menuParentUuid = menuParentUuid;
+    }
     
 }

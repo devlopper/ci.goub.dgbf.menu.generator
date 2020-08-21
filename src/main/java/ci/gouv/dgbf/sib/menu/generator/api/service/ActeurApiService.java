@@ -5,7 +5,8 @@
  */
 package ci.gouv.dgbf.sib.menu.generator.api.service;
 
-import ci.gouv.dgbf.sib.menu.generator.dto.MenuDTO;
+import ci.gouv.dgbf.sib.menu.generator.dto.UserPrivilegeDTO;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.net.URLEncoder;
@@ -15,36 +16,29 @@ import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
-import lombok.Getter;
-import lombok.Setter;
 
 
 @ApplicationScoped
-public class MenuGeneratorPortailApiService {
+public class ActeurApiService {
     
     @Inject
     ApiClient apiClientUtils;
     
-    private static final Logger LOG = Logger.getLogger(MenuGeneratorPortailApiService.class.getName());
+    private static final Logger LOG = Logger.getLogger(ActeurApiService.class.getName());
     
-    public String getPortailUrl(){
-        return "https://siib.dgbf.ci";
-    }
-    
-    public List<MenuDTO> findMenusByServiceCode(String serviceCode){
+    public List<UserPrivilegeDTO> getUserPrivilegeByUsername(String username){
         try {
             Gson gson = new Gson();
-            String url = "http://mic-portail-api/sib/portail/api/v1/menus/services?serviceCode=" + URLEncoder.encode(serviceCode,"UTF-8");
-            //url = "http://10.3.4.17:32324/sib/portail/api/v1/menus/services?serviceCode=" + URLEncoder.encode(serviceCode,"UTF-8");
+
+            String url = "http://mic-acteur-api/api/privilege/privileges-par-acteur-pour-gestion-services?nom_utilisateur=" + URLEncoder.encode(username,"UTF-8");
+            //url = "http://10.3.4.17:30055/api/privilege/privileges-par-acteur-pour-gestion-services?nom_utilisateur=" + URLEncoder.encode(username,"UTF-8");
             String json = apiClientUtils.getResource(url,MediaType.APPLICATION_JSON_TYPE);
-            return gson.fromJson(json, new TypeToken<List<MenuDTO>>(){}.getType());
+
+            return gson.fromJson(json, new TypeToken<List<UserPrivilegeDTO>>(){}.getType());
+
         } catch (Exception ex) {
             return new ArrayList<>();
         }
     }
-    
-    @Getter @Setter
-    private class PortailResponse{
-        String address;
-    }
+
 }
