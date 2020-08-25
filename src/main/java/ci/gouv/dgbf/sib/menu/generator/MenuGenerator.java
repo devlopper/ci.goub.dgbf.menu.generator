@@ -28,13 +28,13 @@ public class MenuGenerator {
     private static final Logger LOG = Logger.getLogger(MenuGenerator.class.getName());
     private static final String ACCOUNT_SERVICE_CODE = "SIIBC-MYOWNER";
 
+    private static final String LOGOUT_MENU_CODE = "LOGOUT";
+
     @Inject
     MenuGeneratorPortailApiService portailApiService;
 
     @Inject
     ActeurApiService acteurApiService;
-
-    String portailUrl = "http://siib.dgbf.ci";
 
     public MenuGenerator() {
 
@@ -74,7 +74,18 @@ public class MenuGenerator {
         menus.sort((MenuDTO m1, MenuDTO m2) -> m1.getPosition() - m2.getPosition());
 
         MenuModel model = new DefaultMenuModel();
-        menus.forEach(m -> { model.addElement(buildMenuItemFromMenu(m)); });
+        menus.forEach(m -> {
+            if(LOGOUT_MENU_CODE.equalsIgnoreCase(m.getCode())){
+                DefaultMenuItem menuItem = new DefaultMenuItem(m.getName());
+                menuItem.setIcon(m.getIcon());
+                menuItem.setCommand("#{micBacking.logout()}");
+                menuItem.setAjax(false);
+                menuItem.setStyleClass("menu-link");
+                model.addElement(menuItem);
+            }
+            else
+                model.addElement(buildMenuItemFromMenu(m)); 
+        });
 
         menuTab.setMenuModel(model);
         return List.of(menuTab);
