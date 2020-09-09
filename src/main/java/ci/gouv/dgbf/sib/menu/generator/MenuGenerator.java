@@ -40,27 +40,29 @@ public class MenuGenerator {
 
     }
 
-    public List<MenuTab> generateServiceMenu(String serviceCode, String username) {
+    public List<MenuTab> generateServiceMenu(String serviceCode, String username, String contextPath) {
 
         List<MenuTab> tabMenus = new ArrayList<>();
 
-        List<UserPrivilegeDTO> privileges = acteurApiService.getUserPrivilegeByUsername(username);
+        List<UserPrivilegeDTO> privilegesf = acteurApiService.getUserPrivilegeByUsername(username);
+        final List<UserPrivilegeDTO> privileges = privilegesf == null ? new ArrayList<>() : privilegesf;
+
         List<MenuDTO> menus = portailApiService.findMenusByServiceCode(serviceCode);
 
         menus = menus
                 .parallelStream().filter(m -> privileges.parallelStream()
-                        .anyMatch(p -> p.getIdentifier().equalsIgnoreCase(m.getUuid())))
+                    .anyMatch(p -> p.getIdentifier().equalsIgnoreCase(m.getUuid())))
                 .collect(Collectors.toList());
 
         menus.sort((MenuDTO m1, MenuDTO m2) -> m1.getPosition() - m2.getPosition());
         List<MenuDTO> noParentMenus = menus.stream()
             .filter(m -> null == m.getMenuParentUuid() && !m.isAbstrait()).collect(Collectors.toList());
 
-        tabMenus.add(buildMenuPrincipal(noParentMenus));
+        tabMenus.add(buildMenuPrincipal(noParentMenus, contextPath));
 
         if (!menus.isEmpty()) {
             List<MenuDTO> firstLevelMenus = menus.stream().filter(m -> null == m.getMenuParentUuid() && m.isAbstrait()).collect(Collectors.toList());
-            tabMenus.addAll(buildMenu(firstLevelMenus, menus));
+            tabMenus.addAll(buildMenu(firstLevelMenus, menus, contextPath));
         }
 
         return tabMenus;
@@ -92,15 +94,15 @@ public class MenuGenerator {
 
     }
 
-    public MenuTab buildMenuPrincipal(List<MenuDTO> firstMenuTabMenus){
+    public MenuTab buildMenuPrincipal(List<MenuDTO> firstMenuTabMenus, String contextPath){
         MenuTab menuTab = new MenuTab();
         menuTab.setIcon("fa fa-fw fa-home");
         menuTab.setTitle("Menu principal");
-        menuTab.setMenuModel(buildFirstTabMenuModel(firstMenuTabMenus));
+        menuTab.setMenuModel(buildFirstTabMenuModel(firstMenuTabMenus,contextPath));
         return menuTab;
     }
 
-    public List<MenuTab> buildMenu(final List<MenuDTO> firstLevelMenus, final List<MenuDTO> menus){
+    public List<MenuTab> buildMenu(final List<MenuDTO> firstLevelMenus, final List<MenuDTO> menus, String contextPath){
         List<MenuTab> tabMenus = new ArrayList<>();
         firstLevelMenus.forEach(m -> {
 
@@ -111,7 +113,7 @@ public class MenuGenerator {
             tabMenu.setTitle(m.getName());
             
             getMenuSubmenus(m,menus).forEach(mn -> {
-                model.addElement(buildMenuElement(mn, menus));
+                model.addElement(buildMenuElement(mn, menus,contextPath));
             });
             tabMenu.setMenuModel(model);
             tabMenus.add(tabMenu);
@@ -123,15 +125,15 @@ public class MenuGenerator {
         return menus.stream().filter(sbm -> menu.getUuid().equals(sbm.getMenuParentUuid())).collect(Collectors.toList());
     }
 
-    private MenuModel buildFirstTabMenuModel(List<MenuDTO> firstTabMenus) {
+    private MenuModel buildFirstTabMenuModel(List<MenuDTO> firstTabMenus, String contextPath) {
         MenuModel model = new DefaultMenuModel();
-        model.addElement(buildMenuItemFromMenu(new MenuDTO("1","Accueil","/protected/user/pages/accueil.xhtml?faces-redirect=true","","fa fa-home",false,0,"0")));
-        firstTabMenus.forEach(m -> { model.addElement(buildMenuItemFromMenu(m)); });
-        model.addElement(buildMenuItemFromMenu(new MenuDTO("10","Retour au portail","https://siibtest.dgbf.ci","","fa fa-reply",false,1,"0")));
+        model.addElement(buildMenuItemFromMenu(new MenuDTO("1","Accueil",contextPath + "/protected/user/pages/accueil.xhtml?faces-redirect=true","","fa fa-home",false,0,"0")));
+        firstTabMenus.forEach(m -> { model.addElement(buildMenuItemFromMenu(m,contextPath)); });
+        model.addElement(buildMenuItemFromMenu(new MenuDTO("10","Retour au portail","/","","fa fa-reply",false,1,"0")));
         return model;
     }
 
-    private MenuElement buildMenuElement(MenuDTO m, List<MenuDTO> menus) {
+    private MenuElement buildMenuElement(MenuDTO m, List<MenuDTO> menus, String contextPath) {
 
         if (m.isAbstrait()) {
 
@@ -142,14 +144,14 @@ public class MenuGenerator {
 
             menuSubmenus.sort((MenuDTO m1, MenuDTO m2) -> m1.getPosition() - m2.getPosition());
             menuSubmenus.forEach(mn -> {
-                menuItem.addElement(buildMenuElement(mn, menus));
+                menuItem.addElement(buildMenuElement(mn, menus, contextPath));
             });
             menuItem.setStyleClass("menu-link");
 
             return menuItem;
 
         } else {
-            return buildMenuItemFromMenu(m);
+            return buildMenuItemFromMenu(m,contextPath);
         }
     }
 
@@ -157,6 +159,16 @@ public class MenuGenerator {
         DefaultMenuItem menuItem = new DefaultMenuItem(m.getName());
         menuItem.setIcon(m.getIcon());
         menuItem.setUrl(m.getUrl());
+        menuItem.setAjax(false);
+        menuItem.setStyleClass("menu-link");
+        return menuItem;
+    }
+
+    private DefaultMenuItem buildMenuItemFromMenu(MenuDTO m, String contextPath) {
+        DefaultMenuItem menuItem = new DefaultMenuItem(m.getName());
+        String url = m.getUrl().startsWith("/") && !m.getUrl().startsWith(contextPath) ? contextPath + "/" + m.getUrl() : m.getUrl();
+        menuItem.setIcon(m.getIcon());
+        menuItem.setUrl(url);
         menuItem.setAjax(false);
         menuItem.setStyleClass("menu-link");
         return menuItem;

@@ -29,11 +29,9 @@ public class ActeurApiService {
     public List<UserPrivilegeDTO> getUserPrivilegeByUsername(String username){
         try {
             Gson gson = new Gson();
-
             String url = "http://mic-acteur-api/api/privilege/privileges-par-acteur-pour-gestion-services?nom_utilisateur=" + URLEncoder.encode(username,"UTF-8");
             //url = "http://10.3.4.17:30055/api/privilege/privileges-par-acteur-pour-gestion-services?nom_utilisateur=" + URLEncoder.encode(username,"UTF-8");
             String json = apiClientUtils.getResource(url,MediaType.APPLICATION_JSON_TYPE);
-
             return gson.fromJson(json, new TypeToken<List<UserPrivilegeDTO>>(){}.getType());
 
         } catch (Exception ex) {
