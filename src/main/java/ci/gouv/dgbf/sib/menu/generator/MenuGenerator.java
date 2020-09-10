@@ -166,7 +166,20 @@ public class MenuGenerator {
 
     private DefaultMenuItem buildMenuItemFromMenu(MenuDTO m, String contextPath) {
         DefaultMenuItem menuItem = new DefaultMenuItem(m.getName());
-        String url = m.getUrl().startsWith("/") && !m.getUrl().startsWith(contextPath) ? contextPath + "/" + m.getUrl() : m.getUrl();
+
+        String realContextPath = "";
+
+        if(m.getContextPath() != null && !m.getContextPath().isBlank()){
+            realContextPath = m.getContextPath() + "/";
+        }
+        else{
+            realContextPath = contextPath + "/";
+        }
+
+        String url = realContextPath + m.getUrl();
+        url = url.replaceAll("//", "/");
+        url = !url.startsWith("/") ? "/" + url : url;
+
         menuItem.setIcon(m.getIcon());
         menuItem.setUrl(url);
         menuItem.setAjax(false);
