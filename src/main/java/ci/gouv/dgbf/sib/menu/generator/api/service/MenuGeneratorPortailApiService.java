@@ -18,10 +18,15 @@ import javax.ws.rs.core.MediaType;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @ApplicationScoped
 public class MenuGeneratorPortailApiService {
     
+	public static String HOST = "mic-portail-api";
+	public static Short PORT = 80;
+	public static String CONTEXT = "/sib/portail";
+	public static String URL_FORMAT = "http://%s:%s%s/api/v1/menus/services?serviceCode=%s";
+	public static String URL;
+	
     @Inject
     ApiClient apiClientUtils;
     
@@ -34,8 +39,8 @@ public class MenuGeneratorPortailApiService {
     public List<MenuDTO> findMenusByServiceCode(String serviceCode){
         try {
             Gson gson = new Gson();
-            String url = "http://mic-portail-api/sib/portail/api/v1/menus/services?serviceCode=" + URLEncoder.encode(serviceCode,"UTF-8");
-            //url = "http://10.3.4.17:32324/sib/portail/api/v1/menus/services?serviceCode=" + URLEncoder.encode(serviceCode,"UTF-8");
+            String url = URL == null || URL.isBlank() ? String.format(URL_FORMAT, HOST,PORT,CONTEXT,URLEncoder.encode(serviceCode,"UTF-8")) : URL;
+            LOG.info("URL : "+url);
             String json = apiClientUtils.getResource(url,MediaType.APPLICATION_JSON_TYPE);
             return gson.fromJson(json, new TypeToken<List<MenuDTO>>(){}.getType());
         } catch (Exception ex) {

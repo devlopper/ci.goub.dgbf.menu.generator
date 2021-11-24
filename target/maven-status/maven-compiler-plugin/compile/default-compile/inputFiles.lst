@@ -1,9 +1,0 @@
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/domain/MenuTab.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/dto/BaseDTO.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/dto/UserPrivilegeDTO.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/api/service/ActeurApiService.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/api/service/ApiClient.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/MenuGenerator.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/dto/MenuDTO.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/api/service/BaseApiService.java
-/home/ndrijk/Dev/NetBeansProjects/sib-menu-generator/src/main/java/ci/gouv/dgbf/sib/menu/generator/api/service/MenuGeneratorPortailApiService.java

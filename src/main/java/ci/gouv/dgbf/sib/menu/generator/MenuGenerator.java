@@ -46,7 +46,7 @@ public class MenuGenerator {
 
         List<UserPrivilegeDTO> privilegesf = acteurApiService.getUserPrivilegeByUsername(username);
         final List<UserPrivilegeDTO> privileges = privilegesf == null ? new ArrayList<>() : privilegesf;
-
+        LOG.info("Number of privileges found : "+privileges.size());
         List<MenuDTO> menus = portailApiService.findMenusByServiceCode(serviceCode);
 
         menus = menus
